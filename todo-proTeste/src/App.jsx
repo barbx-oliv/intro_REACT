@@ -1,79 +1,47 @@
 import { useState } from "react";
 
-function TaskSummary() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Estudar React", completed: false },
-    { id: 2, title: "Criar projeto Vite", completed: true },
-    { id: 3, title: "Passear com o cachorro", completed: false }
-  ]);
+import Header from "../../lista-tarefas/src/components/Header";
+import TarefaForm from "../../lista-tarefas/src/components/TarefaForm";
+import TarefaItem from "../../lista-tarefas/src/components/TarefaItem";
+import TarefaList from "../../lista-tarefas/src/components/TarefaList";
+import { tarefaInicial } from "./data/tarefaMock";
 
-  const completedCount = tasks.filter((task) => task.completed).length;
+function App(){
 
-  function toggleTask(taskId) {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === taskId
-          ? { ...task, completed: !task.completed }
-          : task
-      )
-    );
+  const [tarefas, setTarefas] = useState(tarefaInicial);
+
+  function handleMudar(id){
+    setTarefas((prevTarefas)=> prevTarefas.map((tarefa)=> tarefa.id === id ? {...tarefa, completa: !tarefa.completa }: tarefa));
+
   }
 
-  return (
-    <section>
-      <p>Concluídas: {completedCount}</p>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <span>{task.title}</span>{" "}
-            <button type="button" onClick={() => toggleTask(task.id)}>
-              {task.completed ? "Reabrir" : "Concluir"}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function Counter() {
-  const [count, setCount] = useState(0);
-
-  function incrementThreeTimes() {
-    setCount((current) => current + 1);
-    setCount((current) => current + 1);
-    setCount((current) => current + 1);
+  function handleRemover(id){
+    setTarefas((prevTarefas)=> prevTarefas.filter((tarefa) => tarefa.id !== id));
   }
 
-  return (
-    <div>
-      <p>Valor: {count}</p>
-      <button type="button" onClick={incrementThreeTimes}>
-        Somar 3
-      </button>
-    </div>
-  );
-}
+  // Adicionar uma nova tarefa com 
+  function handleAdicionar(titulo)  {
+    const novaTarefa = {
+      id: Date.now().toString(),
+      titulo,
+      descricao: "Nova Tarefa do Usuário",
+      prioridade: "Normal",
+      completa: false
+    };
 
-export default function App() {
-  return (
-    <main>
-      <header>
-        <h1>To-Do Pro</h1>
-        <p>Organize suas tarefas em um só lugar.</p>
-      </header>
+    // Usando o método adicionar do React (imutabilidade)
+    setTarefas((prevTarefas)=> [novaTarefa, ...prevTarefas]);
+  }
 
-      <section>
-        <h2>Minhas tarefas</h2>
-        <TaskSummary />
-      </section>
 
-      <hr />
-
-      <section>
-        <h2>Contador</h2>
-        <Counter />
-      </section>
+  return(
+    <main className="app-container">
+      <Header/>
+      <TarefaForm/>
+      <p className="tarefa-contador">Tarefas Cadastradas: {tarefas.length}</p>
+      <TarefaList tarefas={tarefas} />
     </main>
   );
 }
+
+export default App;
